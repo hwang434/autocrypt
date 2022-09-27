@@ -4,6 +4,9 @@ plugins {
 }
 
 android {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
     compileSdk 33
 
     defaultConfig {
@@ -13,6 +16,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
+        buildConfigField "String", "CORONA_BASE_URL", properties["CORONA_BASE_URL"]
+        buildConfigField "String", "CORONA_PUBLIC_API_KEY_ENCODED", properties["CORONA_PUBLIC_API_KEY_ENCODED"]
+        buildConfigField "String", "CORONA_PUBLIC_API_KEY_DECODED", properties["CORONA_PUBLIC_API_KEY_DECODED"]
     }
 
     buildTypes {
