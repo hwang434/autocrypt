@@ -11,15 +11,18 @@ import com.hig.autocrypt.R
 class MainFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MainFragment()
+        private val TAG: String = "로그"
     }
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        Log.d(TAG,"MainFragment - onCreateView() called")
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
+        return binding.root
     }
 }
