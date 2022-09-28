@@ -12,6 +12,6 @@ class DateConverter {
 
     @TypeConverter
     fun convertLongToDate(time: Long): Date {
-        return Date(time * 1000)
+        return Date(time)
     }
 }
