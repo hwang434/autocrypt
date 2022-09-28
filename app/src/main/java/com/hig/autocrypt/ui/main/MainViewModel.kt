@@ -3,10 +3,10 @@ package com.hig.autocrypt.ui.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import com.hig.autocrypt.dto.Response
+import com.hig.autocrypt.model.CoronaCenterRepository
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     companion object {
@@ -21,6 +21,8 @@ class MainViewModel : ViewModel() {
 
     private val _isInsertedToDatabase = MutableStateFlow<Boolean>(false)
     val isInsertedToDatabase = _isInsertedToDatabase
+
+    private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository()
 
     fun makeInsertedToDatabaseEnd() {
         Log.d(TAG,"MainViewModel - makeInsertedToDatabaseEnd() called")
@@ -50,5 +52,32 @@ class MainViewModel : ViewModel() {
                 _downloadPercentage.emit(5 * i)
             }
         }
+    }
+
+    fun saveCoronaCenterData() {
+        Log.d(TAG,"MainViewModel - getCoronaCenter() called")
+        viewModelScope.launch(Dispatchers.IO) {
+            val deferredList = Array<Deferred<Response>?>(10) { null }
+            for (page in 1..10) {
+                val def = async {
+                    // get center info
+                    val result = getCoronaData(page = page, 10)
+                    // Save to room
+                    // todo() save data to room
+                    result
+                }
+
+                deferredList[page - 1] = def
+            }
+
+            // Wait until all operation is done.
+            deferredList.forEach {
+                Log.d(TAG,"MainViewModel - ${it?.await()?.data} called")
+            }
+        }
+    }
+
+    private suspend fun getCoronaData(page: Int, perPage: Int = 10): Response {
+        return coronaCenterRepository.getCoronaCenter(page, perPage)
     }
 }
