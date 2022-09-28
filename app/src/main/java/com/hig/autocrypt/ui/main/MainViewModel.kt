@@ -73,7 +73,6 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
             databaseDeferredList.awaitAll()
 
             // All database operation is done.
-            selectCoronaCenters()
             // Stop animation and play animation for 80 to 100.
             jobOfZeroToEightyAni.cancelAndJoin()
             makePercentageEightyToHundred()
@@ -88,14 +87,5 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
     private suspend fun getCoronaCentersFromApi(page: Int, perPage: Int = 10): Response {
         Log.d(TAG,"MainViewModel - getCoronaCentersFromApi() called")
         return coronaCenterRepository.getCoronaCenter(page, perPage)
-    }
-
-    private suspend fun selectCoronaCenters(): List<PublicHealth> {
-        Log.d(TAG,"MainViewModel - selectCoronaCenters() called")
-        val result = coronaCenterRepository.selectCoronaCenters()
-        result.forEach {
-            Log.d(TAG,"MainViewModel - publicHealth : $it")
-        }
-        return result
     }
 }
