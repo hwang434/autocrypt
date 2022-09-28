@@ -39,6 +39,7 @@ class MainFragment : Fragment() {
 
         setObserver()
         startInitAnimation()
+        viewModel.refreshCoronaCenterData()
     }
 
     private fun setObserver() {
