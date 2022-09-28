@@ -7,10 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.hig.autocrypt.dto.PublicHealth
 import com.hig.autocrypt.dto.Response
 import com.hig.autocrypt.model.CoronaCenterRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MainViewModel @Inject constructor( application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG: String = "로그"
     }
