@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMainBinding
@@ -19,7 +20,7 @@ class MainFragment : Fragment() {
         private val TAG: String = "로그"
     }
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(
@@ -36,13 +37,8 @@ class MainFragment : Fragment() {
         Log.d(TAG,"MainFragment - onViewCreated() called")
         super.onViewCreated(view, savedInstanceState)
 
-        setViewModel()
         setObserver()
-        viewModel.makePercentageEighty()
-    }
-
-    private fun setViewModel() {
-        viewModel = MainViewModel()
+        startInitAnimation()
     }
 
     private fun setObserver() {
@@ -54,6 +50,14 @@ class MainFragment : Fragment() {
                     binding.progressMainLoadingApi.progress = it
                 }
             }
+        }
+    }
+
+    private fun startInitAnimation() {
+        Log.d(TAG,"MainFragment - startInitAnimation() viewmodel.downloadPercentage.value : ${viewModel.downloadPercentage.value} called")
+
+        if (viewModel.downloadPercentage.value == 0) {
+            viewModel.makePercentageEighty()
         }
     }
 }
