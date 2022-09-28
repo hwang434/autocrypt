@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -77,4 +79,14 @@ dependencies {
     // by viewmodels
     implementation 'androidx.activity:activity-ktx:1.6.0'
     implementation 'androidx.fragment:fragment-ktx:1.5.3'
+
+    // room
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // To use coroutine in room.
+    implementation( "androidx.room:room-ktx:$room_version")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt "androidx.room:room-compiler:$room_version"
 }
