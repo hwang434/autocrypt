@@ -41,8 +41,8 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
         viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 85%. end percentage is 100%.
             for (i in 17..20) {
-                delay(100)
                 _downloadPercentage.emit(5 * i)
+                delay(75)
             }
         }
     }
