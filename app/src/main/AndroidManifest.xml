@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.hig.autocrypt">
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Permission for retrofit http request -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:name=".AutocryptApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Autocrypt"
