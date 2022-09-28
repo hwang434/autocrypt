@@ -21,17 +21,13 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
     private val _downloadPercentage = MutableStateFlow<Int>(0)
     val downloadPercentage = _downloadPercentage
 
-    private val _isResponseEnd = MutableStateFlow<String>("hi")
-    val isResponseEnd = _isResponseEnd
-
-    private val _isInsertedToDatabase = MutableStateFlow<Boolean>(false)
-    val isInsertedToDatabase = _isInsertedToDatabase
+    private lateinit var jobOfZeroToEightyAni: Job
 
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
     fun makePercentageEighty() {
         Log.d(TAG,"MainViewModel - makePercentageEighty() called")
-        viewModelScope.launch(Dispatchers.IO) {
+        jobOfZeroToEightyAni = viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 5%. end percentage is 80%.
             for (i in 1..16) {
                 delay(100)
@@ -40,13 +36,13 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
         }
     }
 
-    fun makePercentageEightyToHundred() {
+    private fun makePercentageEightyToHundred() {
         Log.d(TAG,"MainViewModel - makePercentageEightyToHundred() called")
         viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 85%. end percentage is 100%.
             for (i in 17..20) {
-                delay(100)
                 _downloadPercentage.emit(5 * i)
+                delay(75)
             }
         }
     }
@@ -78,6 +74,9 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
 
             // All database operation is done.
             selectCoronaCenters()
+            // Stop animation and play animation for 80 to 100.
+            jobOfZeroToEightyAni.cancelAndJoin()
+            makePercentageEightyToHundred()
         }
     }
 

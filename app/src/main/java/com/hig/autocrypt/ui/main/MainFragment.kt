@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -45,12 +47,18 @@ class MainFragment : Fragment() {
     }
 
     private fun setObserver() {
+        Log.d(TAG, "setObserver: ")
         lifecycleScope.launchWhenStarted {
-            viewModel.downloadPercentage.collectLatest {
+            viewModel.downloadPercentage.collectLatest { percentage ->
                 if (Build.VERSION.SDK_INT >= 24) {
-                    binding.progressMainLoadingApi.setProgress(it, true)
+                    binding.progressMainLoadingApi.setProgress(percentage, true)
                 } else {
-                    binding.progressMainLoadingApi.progress = it
+                    binding.progressMainLoadingApi.progress = percentage
+                }
+
+                if (percentage == 100) {
+                    delay(100)
+                    findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
                 }
             }
         }
