@@ -18,6 +18,5 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG,"MainActivity - onCreate() called")
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
     }
 }
