@@ -180,8 +180,8 @@ class MapFragment : Fragment() {
                     marker.position = LatLng(publicHealth.lat, publicHealth.lng)
                     marker.map = naverMap
                     marker.captionText = publicHealth.facilityName
-                    marker.width = 80
-                    marker.height = 100
+                    marker.width = Marker.SIZE_AUTO
+                    marker.height = Marker.SIZE_AUTO
 
                     when (publicHealth.centerType) {
                         "중앙/권역" -> {
