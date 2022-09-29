@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,9 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import com.google.android.gms.location.*
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMapBinding
 import com.hig.autocrypt.viewmodel.MapViewModel
@@ -30,14 +29,14 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MapFragment : Fragment() {
     companion object {
         private const val TAG = "로그"
-        private const val LOCATION_REQUEST_INTERVAL = 60 * 1000L
+        private const val LOCATION_REQUEST_MIN_INTERVAL = 10 * 1000L
+        private const val LOCATION_REQUEST_MAX_INTERVAL = 15 * 1000L
         private var timeOfBackClicked = 0L
     }
 
@@ -47,6 +46,7 @@ class MapFragment : Fragment() {
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
+    private lateinit var locationCallback: LocationCallback
 
     override fun onAttach(context: Context) {
         Log.d(TAG,"MapFragment - onAttach() called")
@@ -59,6 +59,7 @@ class MapFragment : Fragment() {
         addBackPressFinishFunction()
         initFusedLocationClient()
         initLocationManager()
+        setLocationCallback()
     }
 
     override fun onCreateView(
@@ -238,6 +239,19 @@ class MapFragment : Fragment() {
         locationManager = ContextCompat.getSystemService(requireContext(), LocationManager::class.java) as LocationManager
     }
 
+    private fun setLocationCallback() {
+        Log.d(TAG,"MapFragment - setLocationCallback() called")
+        locationCallback = object: LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                locationResult.lastLocation?.let { lastLocation ->
+                    Log.d(TAG,"MapFragment - onLocationResult() latitude : ${lastLocation.latitude} longtitude : ${lastLocation.longitude}")
+                    mapViewModel.setLatLng(latLng = LatLng(lastLocation.latitude, lastLocation.longitude))
+                }
+            }
+        }
+    }
+
     private fun isLocationPermissionGranted(): Boolean {
         Log.d(TAG,"MapFragment - isLocationPermissionGranted() called")
         if (ActivityCompat.checkSelfPermission(
@@ -257,6 +271,7 @@ class MapFragment : Fragment() {
     }
 
     private fun isGpsEnabled(): Boolean {
+        Log.d(TAG,"MapFragment - isGpsEnabled() called")
         return if (Build.VERSION.SDK_INT >= 28) {
             locationManager.isLocationEnabled
         } else {
@@ -266,23 +281,14 @@ class MapFragment : Fragment() {
 
     private fun requestLocation() {
         Log.d(TAG,"MapFragment - requestLocation() called")
-        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).addOnCompleteListener { locationTask ->
-            if (!locationTask.isSuccessful) {
-                Toast.makeText(requireContext(), "request location fail.", Toast.LENGTH_SHORT).show()
-                return@addOnCompleteListener
-            }
-
-            val locationResult = locationTask.result
-            Log.d(TAG,"MapFragment - locationResult : ${locationResult}() called")
-            when (locationResult) {
-                null -> {
-                    Toast.makeText(requireContext(), "We can not know your location.", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    mapViewModel.setLatLng(latLng = LatLng(locationResult.latitude, locationResult.longitude))
-                }
-            }
-        }
+        fusedLocationClient.requestLocationUpdates(
+            LocationRequest
+                .create()
+                .setInterval(LOCATION_REQUEST_MIN_INTERVAL)
+                .setMaxWaitTime(LOCATION_REQUEST_MAX_INTERVAL),
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     private fun startLocationRequestLoop() {
@@ -291,15 +297,12 @@ class MapFragment : Fragment() {
                 return@launchWhenStarted
             }
 
-            while (true) {
-                if (!isGpsEnabled()) {
-                    Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
-                    return@launchWhenStarted
-                }
-
-                requestLocation()
-                delay(LOCATION_REQUEST_INTERVAL)
+            if (!isGpsEnabled()) {
+                Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
+                return@launchWhenStarted
             }
+
+            requestLocation()
         }
     }
 
