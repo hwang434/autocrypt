@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -35,6 +36,7 @@ class MapFragment : Fragment() {
     companion object {
         private const val TAG = "로그"
         private const val LOCATION_REQUEST_INTERVAL = 60 * 1000L
+        private var timeOfBackClicked = 0L
     }
 
     private val mapViewModel: MapViewModel by viewModels()
@@ -47,6 +49,7 @@ class MapFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "MapFragment - onCreate()")
         super.onCreate(savedInstanceState)
+        addBackPressFinishFunction()
         initFusedLocationClient()
         initLocationManager()
     }
@@ -133,6 +136,20 @@ class MapFragment : Fragment() {
         Log.d(TAG,"MapFragment - onLowMemory() called")
         super.onLowMemory()
         mapView.onLowMemory()
+    }
+    
+    private fun addBackPressFinishFunction() {
+        Log.d(TAG,"MapFragment - addBackPressFinishFunction() called")
+        requireActivity().onBackPressedDispatcher.addCallback {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - timeOfBackClicked <= 1500) {
+                requireActivity().finish()
+                return@addCallback
+            }
+
+            Toast.makeText(requireContext(), "If you want to close app. Tap one more time.", Toast.LENGTH_SHORT).show()
+            timeOfBackClicked = currentTime
+        }
     }
 
     private fun setEvent() {
