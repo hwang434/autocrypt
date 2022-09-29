@@ -1,9 +1,15 @@
 plugins {
+    id 'kotlin-android'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
     compileSdk 33
 
     defaultConfig {
@@ -13,6 +19,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "CORONA_BASE_URL", properties["CORONA_BASE_URL"]
+        buildConfigField "String", "CORONA_PUBLIC_API_KEY_ENCODED", properties["CORONA_PUBLIC_API_KEY_ENCODED"]
+        buildConfigField "String", "CORONA_PUBLIC_API_KEY_DECODED", properties["CORONA_PUBLIC_API_KEY_DECODED"]
+        buildConfigField "String", "NAVER_MAP_CLIENT_ID", properties["NAVER_MAP_CLIENT_ID"]
     }
 
     buildTypes {
@@ -33,6 +44,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.hig.autocrypt'
 }
 
 dependencies {
@@ -58,4 +70,37 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:2.4.3"
     annotationProcessor "androidx.room:room-compiler:2.4.3"
+
+    // flow launchWhenStarted
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+
+    // navigation
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.2"
+
+    // by viewmodels
+    implementation 'androidx.activity:activity-ktx:1.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.3'
+
+    // room
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // To use coroutine in room.
+    implementation( "androidx.room:room-ktx:$room_version")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // Hilt Setting
+    implementation "com.google.dagger:hilt-android:2.38.1"
+    kapt "com.google.dagger:hilt-compiler:2.38.1"
+
+    // Naver Map SDK
+    // 네이버 지도 SDK
+    implementation "com.naver.maps:map-sdk:3.16.0"
+
+    // Fused Location Provider
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
 }

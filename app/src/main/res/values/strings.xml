@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">autocrypt</string>
+    <string name="button_for_my_location">Locate Marker to the my location.</string>
 </resources>
