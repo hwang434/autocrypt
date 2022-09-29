@@ -14,6 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(application: Application): AndroidViewModel(application) {
+    companion object {
+        private const val TAG = "로그"
+    }
     
     init {
         Log.d(TAG, "MapViewModel - init()")
@@ -25,9 +28,8 @@ class MapViewModel @Inject constructor(application: Application): AndroidViewMod
     private val _center: MutableStateFlow<PublicHealth?> = MutableStateFlow(null)
     val center = _center.asStateFlow()
 
-    companion object {
-        private const val TAG = "로그"
-    }
+    private val _isStatusVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isStatusVisible = _isStatusVisible.asStateFlow()
 
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
@@ -48,6 +50,14 @@ class MapViewModel @Inject constructor(application: Application): AndroidViewMod
         Log.d(TAG, "MapViewModel - updateCenter($publicHealth)")
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "MapViewModel - updateCenter inside coroutine()")
+            // if : click same marker. hide the statusbar and return
+            // else : show statusBar and emit data.
+            if (_center.value == publicHealth) {
+                _isStatusVisible.emit(false)
+                return@launch
+            }
+
+            _isStatusVisible.emit(true)
             _center.emit(publicHealth)
         }
     }
