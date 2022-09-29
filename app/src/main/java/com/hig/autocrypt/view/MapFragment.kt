@@ -297,6 +297,11 @@ class MapFragment : Fragment() {
 
     private fun refreshCentersFlow() {
         Log.d(TAG, "MapFragment - refreshCentersFlow()")
+        if (mapViewModel.centers.value != null) {
+            Log.d(TAG,"MapFragment - data already saved.() called")
+            return
+        }
+
         lifecycleScope.launchWhenStarted {
             mapViewModel.initCenters()
         }
