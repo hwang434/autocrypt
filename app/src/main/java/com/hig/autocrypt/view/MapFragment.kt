@@ -150,16 +150,11 @@ class MapFragment : Fragment() {
         }
 
         lifecycleScope.launchWhenStarted {
-            mapViewModel.center.collectLatest {
-                Log.d(TAG, "MapFragment - mapViewModel.center.collectLatest")
-                Log.d(TAG, "MapFragment - center : $it()")
-                when (it) {
-                    null -> {
-                        binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.GONE
-                    }
-                    else -> {
-                        binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.VISIBLE
-                    }
+            mapViewModel.isStatusVisible.collectLatest {
+                if (it) {
+                    binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.VISIBLE
+                } else {
+                    binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.GONE
                 }
             }
         }
@@ -174,12 +169,14 @@ class MapFragment : Fragment() {
 
     // Need to move camera.
     private fun getCameraUpdate(lat: Double, lng: Double): CameraUpdate {
+        Log.d(TAG,"MapFragment - getCameraUpdate() called")
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
         cameraUpdate.animate(CameraAnimation.Fly)
         return cameraUpdate
     }
 
     private fun moveCamera(cameraUpdate: CameraUpdate) {
+        Log.d(TAG,"MapFragment - moveCamera() called")
         naverMap.moveCamera(cameraUpdate)
     }
 }
