@@ -1,4 +1,4 @@
-package com.hig.autocrypt.ui.main
+package com.hig.autocrypt.viewmodel
 
 import android.app.Application
 import android.util.Log
