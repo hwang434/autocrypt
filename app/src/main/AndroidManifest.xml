@@ -3,14 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Permission for retrofit http request -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permission for location-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".AutocryptApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Autocrypt"
-        tools:targetApi="31"
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="whateverString">
+        tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true">
