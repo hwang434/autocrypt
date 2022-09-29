@@ -103,4 +103,7 @@ dependencies {
 
     // Fused Location Provider
     implementation 'com.google.android.gms:play-services-location:20.0.0'
+
+    // Lottie animation for mainFragment loading
+    implementation 'com.airbnb.android:lottie:5.2.0'
 }
