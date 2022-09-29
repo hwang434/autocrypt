@@ -80,12 +80,12 @@ class MapFragment : Fragment() {
             refreshCentersFlow()
             lifecycleScope.launchWhenStarted {
                 if (isLocationPermissionGranted()) {
-                    if (!isGpsEnabled()) {
-                        Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
-                        return@launchWhenStarted
-                    }
-
                     while (true) {
+                        if (!isGpsEnabled()) {
+                            Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
+                            return@launchWhenStarted
+                        }
+
                         requestLocation()
                         delay(LOCATION_REQUEST_INTERVAL)
                     }
