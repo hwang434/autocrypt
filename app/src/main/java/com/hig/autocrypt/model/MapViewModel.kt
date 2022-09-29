@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.hig.autocrypt.dto.PublicHealth
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,9 @@ class MapViewModel @Inject constructor(application: Application): AndroidViewMod
     init {
         Log.d(TAG, "MapViewModel - init()")
     }
+
+    private val _latLng: MutableStateFlow<LatLng> = MutableStateFlow(LatLng(37.0, 127.0))
+    val latLng = _latLng.asStateFlow()
 
     private val _centers: MutableStateFlow<List<PublicHealth>?> = MutableStateFlow(null)
     val centers = _centers.asStateFlow()
@@ -59,6 +63,13 @@ class MapViewModel @Inject constructor(application: Application): AndroidViewMod
 
             _isStatusVisible.emit(true)
             _center.emit(publicHealth)
+        }
+    }
+
+    fun setLatLng(latLng: LatLng) {
+        Log.d(TAG,"MapViewModel - setLocationOverlay() called")
+        viewModelScope.launch(Dispatchers.IO) {
+            _latLng.emit(latLng)
         }
     }
 }

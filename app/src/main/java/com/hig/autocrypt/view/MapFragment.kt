@@ -1,15 +1,25 @@
 package com.hig.autocrypt.view
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextMenu
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMapBinding
 import com.hig.autocrypt.model.MapViewModel
@@ -18,22 +28,28 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MapFragment : Fragment() {
     companion object {
         private const val TAG = "로그"
+        private const val LOCATION_REQUEST_INTERVAL = 60 * 1000L
     }
 
     private val mapViewModel: MapViewModel by viewModels()
     private lateinit var binding: FragmentMapBinding
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "MapFragment - onCreate()")
         super.onCreate(savedInstanceState)
+        initFusedLocationClient()
+        initLocationManager()
     }
 
     override fun onCreateView(
@@ -59,8 +75,22 @@ class MapFragment : Fragment() {
         mapView.getMapAsync {
             naverMap = it
 
+            setEvent()
             setObserver()
             refreshCentersFlow()
+            lifecycleScope.launchWhenStarted {
+                if (isLocationPermissionGranted()) {
+                    if (!isGpsEnabled()) {
+                        Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
+                        return@launchWhenStarted
+                    }
+
+                    while (true) {
+                        requestLocation()
+                        delay(LOCATION_REQUEST_INTERVAL)
+                    }
+                }
+            }
         }
     }
 
@@ -104,6 +134,15 @@ class MapFragment : Fragment() {
         Log.d(TAG,"MapFragment - onLowMemory() called")
         super.onLowMemory()
         mapView.onLowMemory()
+    }
+
+    private fun setEvent() {
+        Log.d(TAG,"MapFragment - setEvent() called")
+        binding.buttonMapForMyLocation.setOnClickListener {
+            val latLng = mapViewModel.latLng.value
+            val cameraUpdate = getCameraUpdate(latLng.latitude, latLng.longitude)
+            moveCamera(cameraUpdate)
+        }
     }
 
     private fun setObserver() {
@@ -155,6 +194,66 @@ class MapFragment : Fragment() {
                     binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.VISIBLE
                 } else {
                     binding.constraintLayoutMapForMarkerStatusContainer.visibility = View.GONE
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            mapViewModel.latLng.collectLatest {
+                naverMap.locationOverlay.isVisible = true
+                naverMap.locationOverlay.position = it
+            }
+        }
+    }
+
+    private fun initFusedLocationClient() {
+        Log.d(TAG,"MapFragment - initFusedLocationClient() called")
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().applicationContext)
+    }
+
+    private fun initLocationManager() {
+        Log.d(TAG,"MapFragment - initLocationManager() called")
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    }
+
+    private fun isLocationPermissionGranted(): Boolean {
+        Log.d(TAG,"MapFragment - isLocationPermissionGranted() called")
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED)
+        {
+            requireActivity().requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+            return false
+        }
+
+        return true
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        return locationManager.isLocationEnabled
+    }
+
+    private fun requestLocation() {
+        Log.d(TAG,"MapFragment - requestLocation() called")
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).addOnCompleteListener { locationTask ->
+            if (!locationTask.isSuccessful) {
+                Toast.makeText(requireContext(), "request location fail.", Toast.LENGTH_SHORT).show()
+                return@addOnCompleteListener
+            }
+
+            val locationResult = locationTask.result
+            Log.d(TAG,"MapFragment - locationResult : ${locationResult}() called")
+            when (locationResult) {
+                null -> {
+                    Toast.makeText(requireContext(), "We can not know your location.", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    mapViewModel.setLatLng(latLng = LatLng(locationResult.latitude, locationResult.longitude))
                 }
             }
         }
