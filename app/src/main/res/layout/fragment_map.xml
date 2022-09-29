@@ -20,13 +20,15 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <Button
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/button_map_for_my_location"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 app:layout_constraintBottom_toTopOf="@id/constraint_layout_map_for_marker_status_container"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="5dp"
+                android:src="@drawable/current_location_button_foreground"
+                android:background="@null"
                 android:contentDescription="@string/button_for_my_location"/>
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_layout_map_for_marker_status_container"
