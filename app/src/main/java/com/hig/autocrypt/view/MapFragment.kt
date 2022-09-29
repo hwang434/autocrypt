@@ -76,21 +76,23 @@ class MapFragment : Fragment() {
         // 맵이 준비가 되면 불리는 콜백
         mapView.getMapAsync {
             naverMap = it
-
             setEvent()
             setObserver()
             refreshCentersFlow()
-            lifecycleScope.launchWhenStarted {
-                if (isLocationPermissionGranted()) {
-                    while (true) {
-                        if (!isGpsEnabled()) {
-                            Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
-                            return@launchWhenStarted
-                        }
 
-                        requestLocation()
-                        delay(LOCATION_REQUEST_INTERVAL)
+            lifecycleScope.launchWhenStarted {
+                if (!isLocationPermissionGranted()) {
+                    return@launchWhenStarted
+                }
+
+                while (true) {
+                    if (!isGpsEnabled()) {
+                        Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
+                        return@launchWhenStarted
                     }
+
+                    requestLocation()
+                    delay(LOCATION_REQUEST_INTERVAL)
                 }
             }
         }
