@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
-import android.view.ContextMenu
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +21,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMapBinding
-import com.hig.autocrypt.model.MapViewModel
+import com.hig.autocrypt.viewmodel.MapViewModel
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
