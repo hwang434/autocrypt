@@ -46,6 +46,11 @@ class MapFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
 
+    override fun onAttach(context: Context) {
+        Log.d(TAG,"MapFragment - onAttach() called")
+        super.onAttach(context)
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "MapFragment - onCreate()")
         super.onCreate(savedInstanceState)
@@ -76,23 +81,10 @@ class MapFragment : Fragment() {
         // 맵이 준비가 되면 불리는 콜백
         mapView.getMapAsync {
             naverMap = it
-
             setEvent()
             setObserver()
             refreshCentersFlow()
-            lifecycleScope.launchWhenStarted {
-                if (isLocationPermissionGranted()) {
-                    while (true) {
-                        if (!isGpsEnabled()) {
-                            Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
-                            return@launchWhenStarted
-                        }
-
-                        requestLocation()
-                        delay(LOCATION_REQUEST_INTERVAL)
-                    }
-                }
-            }
+            startLocationRequestLoop()
         }
     }
 
@@ -132,12 +124,22 @@ class MapFragment : Fragment() {
         mapView.onDestroy()
     }
 
+    override fun onDestroy() {
+        Log.d(TAG,"MapFragment - onDestroy() called")
+        super.onDestroy()
+    }
+
+    override fun onDetach() {
+        Log.d(TAG,"MapFragment - onDetach() called")
+        super.onDetach()
+    }
+
     override fun onLowMemory() {
         Log.d(TAG,"MapFragment - onLowMemory() called")
         super.onLowMemory()
         mapView.onLowMemory()
     }
-    
+
     private fun addBackPressFinishFunction() {
         Log.d(TAG,"MapFragment - addBackPressFinishFunction() called")
         requireActivity().onBackPressedDispatcher.addCallback {
@@ -275,8 +277,31 @@ class MapFragment : Fragment() {
         }
     }
 
+    private fun startLocationRequestLoop() {
+        lifecycleScope.launchWhenStarted {
+            if (!isLocationPermissionGranted()) {
+                return@launchWhenStarted
+            }
+
+            while (true) {
+                if (!isGpsEnabled()) {
+                    Toast.makeText(requireContext(), "To See the current location. You need to Turn on Gps", Toast.LENGTH_SHORT).show()
+                    return@launchWhenStarted
+                }
+
+                requestLocation()
+                delay(LOCATION_REQUEST_INTERVAL)
+            }
+        }
+    }
+
     private fun refreshCentersFlow() {
         Log.d(TAG, "MapFragment - refreshCentersFlow()")
+        if (mapViewModel.centers.value != null) {
+            Log.d(TAG,"MapFragment - data already saved.() called")
+            return
+        }
+
         lifecycleScope.launchWhenStarted {
             mapViewModel.initCenters()
         }
