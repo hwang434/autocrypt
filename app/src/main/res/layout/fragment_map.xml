@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="com.hig.autocrypt.model.MapViewModel" />
+            type="com.hig.autocrypt.viewmodel.MapViewModel" />
     </data>
     <FrameLayout
         android:id="@+id/frame_layout_map_container"

@@ -1,10 +1,11 @@
-package com.hig.autocrypt.model
+package com.hig.autocrypt.viewmodel
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.hig.autocrypt.dto.PublicHealth
+import com.hig.autocrypt.model.CoronaCenterRepository
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
