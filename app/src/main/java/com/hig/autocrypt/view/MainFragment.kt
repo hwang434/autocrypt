@@ -1,6 +1,5 @@
 package com.hig.autocrypt.view
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -22,7 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 class MainFragment : Fragment() {
 
     companion object {
-        private val TAG: String = "로그"
+        private const val TAG: String = "로그"
     }
 
     private val viewModel: MainViewModel by viewModels()
@@ -51,11 +50,8 @@ class MainFragment : Fragment() {
         Log.d(TAG, "setObserver: ")
         lifecycleScope.launchWhenStarted {
             viewModel.downloadPercentage.collectLatest { percentage ->
-                if (Build.VERSION.SDK_INT >= 24) {
-                    binding.progressMainLoadingApi.setProgress(percentage, true)
-                } else {
-                    binding.progressMainLoadingApi.progress = percentage
-                }
+                // total frame is 300. So percentage * 3 will be (0 <= frame <= 300) == (0 <= % <= 100)
+                binding.lottieMainPercentageAnimation.frame = 3 * percentage
 
                 if (percentage == 100) {
                     delay(100)
