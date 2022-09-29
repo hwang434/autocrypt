@@ -1,8 +1,9 @@
 plugins {
+    id 'kotlin-android'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -22,6 +23,7 @@ android {
         buildConfigField "String", "CORONA_BASE_URL", properties["CORONA_BASE_URL"]
         buildConfigField "String", "CORONA_PUBLIC_API_KEY_ENCODED", properties["CORONA_PUBLIC_API_KEY_ENCODED"]
         buildConfigField "String", "CORONA_PUBLIC_API_KEY_DECODED", properties["CORONA_PUBLIC_API_KEY_DECODED"]
+        buildConfigField "String", "NAVER_MAP_CLIENT_ID", properties["NAVER_MAP_CLIENT_ID"]
     }
 
     buildTypes {
@@ -42,6 +44,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.hig.autocrypt'
 }
 
 dependencies {
@@ -89,4 +92,15 @@ dependencies {
 
     // To use Kotlin annotation processing tool (kapt)
     kapt "androidx.room:room-compiler:$room_version"
+
+    // Hilt Setting
+    implementation "com.google.dagger:hilt-android:2.38.1"
+    kapt "com.google.dagger:hilt-compiler:2.38.1"
+
+    // Naver Map SDK
+    // 네이버 지도 SDK
+    implementation "com.naver.maps:map-sdk:3.16.0"
+
+    // Fused Location Provider
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
 }

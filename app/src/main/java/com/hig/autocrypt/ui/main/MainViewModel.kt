@@ -7,10 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.hig.autocrypt.dto.PublicHealth
 import com.hig.autocrypt.dto.Response
 import com.hig.autocrypt.model.CoronaCenterRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MainViewModel @Inject constructor( application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG: String = "로그"
     }
@@ -18,17 +21,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _downloadPercentage = MutableStateFlow<Int>(0)
     val downloadPercentage = _downloadPercentage
 
-    private val _isResponseEnd = MutableStateFlow<String>("hi")
-    val isResponseEnd = _isResponseEnd
-
-    private val _isInsertedToDatabase = MutableStateFlow<Boolean>(false)
-    val isInsertedToDatabase = _isInsertedToDatabase
+    private lateinit var jobOfZeroToEightyAni: Job
 
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
     fun makePercentageEighty() {
         Log.d(TAG,"MainViewModel - makePercentageEighty() called")
-        viewModelScope.launch(Dispatchers.IO) {
+        jobOfZeroToEightyAni = viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 5%. end percentage is 80%.
             for (i in 1..16) {
                 delay(100)
@@ -37,13 +36,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun makePercentageEightyToHundred() {
+    private fun makePercentageEightyToHundred() {
         Log.d(TAG,"MainViewModel - makePercentageEightyToHundred() called")
         viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 85%. end percentage is 100%.
             for (i in 17..20) {
-                delay(100)
                 _downloadPercentage.emit(5 * i)
+                delay(75)
             }
         }
     }
@@ -74,7 +73,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             databaseDeferredList.awaitAll()
 
             // All database operation is done.
-            selectCoronaCenters()
+            // Stop animation and play animation for 80 to 100.
+            jobOfZeroToEightyAni.cancelAndJoin()
+            makePercentageEightyToHundred()
         }
     }
 
@@ -86,14 +87,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun getCoronaCentersFromApi(page: Int, perPage: Int = 10): Response {
         Log.d(TAG,"MainViewModel - getCoronaCentersFromApi() called")
         return coronaCenterRepository.getCoronaCenter(page, perPage)
-    }
-
-    private suspend fun selectCoronaCenters(): List<PublicHealth> {
-        Log.d(TAG,"MainViewModel - selectCoronaCenters() called")
-        val result = coronaCenterRepository.selectCoronaCenters()
-        result.forEach {
-            Log.d(TAG,"MainViewModel - publicHealth : $it")
-        }
-        return result
     }
 }
