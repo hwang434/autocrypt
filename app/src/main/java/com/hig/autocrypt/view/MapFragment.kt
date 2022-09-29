@@ -109,10 +109,10 @@ class MapFragment : Fragment() {
     private fun setObserver() {
         Log.d(TAG, "MapFragment - setObserver()")
         lifecycleScope.launchWhenStarted {
-            mapViewModel.centers.collect { listOfPublicHealth ->
+            mapViewModel.centers.collectLatest { listOfPublicHealth ->
                 Log.d(TAG, "MapFragment - collectLatest()")
                 if (listOfPublicHealth == null) {
-                    return@collect
+                    return@collectLatest
                 }
 
                 // 마크 추가하기
