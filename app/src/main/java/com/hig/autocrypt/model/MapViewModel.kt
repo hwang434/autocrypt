@@ -57,6 +57,11 @@ class MapViewModel @Inject constructor(application: Application): AndroidViewMod
             // if : click same marker. hide the statusbar and return
             // else : show statusBar and emit data.
             if (_center.value == publicHealth) {
+                // even if same result. if status bar is gone then make visible statusBar
+                if (!_isStatusVisible.value) {
+                    _isStatusVisible.emit(true)
+                    return@launch
+                }
                 _isStatusVisible.emit(false)
                 return@launch
             }
