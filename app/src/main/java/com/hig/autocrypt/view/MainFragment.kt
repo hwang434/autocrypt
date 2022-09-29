@@ -1,4 +1,4 @@
-package com.hig.autocrypt.ui.main
+package com.hig.autocrypt.view
 
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMainBinding
+import com.hig.autocrypt.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
