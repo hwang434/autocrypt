@@ -46,6 +46,11 @@ class MapFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
 
+    override fun onAttach(context: Context) {
+        Log.d(TAG,"MapFragment - onAttach() called")
+        super.onAttach(context)
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "MapFragment - onCreate()")
         super.onCreate(savedInstanceState)
@@ -134,12 +139,22 @@ class MapFragment : Fragment() {
         mapView.onDestroy()
     }
 
+    override fun onDestroy() {
+        Log.d(TAG,"MapFragment - onDestroy() called")
+        super.onDestroy()
+    }
+
+    override fun onDetach() {
+        Log.d(TAG,"MapFragment - onDetach() called")
+        super.onDetach()
+    }
+
     override fun onLowMemory() {
         Log.d(TAG,"MapFragment - onLowMemory() called")
         super.onLowMemory()
         mapView.onLowMemory()
     }
-    
+
     private fun addBackPressFinishFunction() {
         Log.d(TAG,"MapFragment - addBackPressFinishFunction() called")
         requireActivity().onBackPressedDispatcher.addCallback {
