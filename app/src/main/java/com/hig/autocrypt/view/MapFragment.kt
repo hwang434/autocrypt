@@ -140,9 +140,9 @@ class MapFragment : Fragment() {
                     }
 
                     marker.setOnClickListener {
+                        mapViewModel.updateCenter(publicHealth)
                         val cameraUpdate = getCameraUpdate(publicHealth.lat, publicHealth.lng)
                         moveCamera(cameraUpdate)
-                        mapViewModel.updateCenter(publicHealth)
                         true
                     }
                 }
