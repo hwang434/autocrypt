@@ -43,7 +43,7 @@
                     android:id="@+id/text_view_map_for_address"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewmodel.center.address}"
+                    android:text="@{`address : ` + viewmodel.center.address}"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -51,7 +51,7 @@
                     android:id="@+id/text_view_map_for_center_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewmodel.center.centerName}"
+                    android:text="@{`center name : ` + viewmodel.center.centerName}"
                     app:layout_constraintTop_toBottomOf="@id/text_view_map_for_address"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -59,7 +59,7 @@
                     android:id="@+id/text_view_map_for_facilityName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewmodel.center.facilityName}"
+                    android:text="@{`facility name : ` + viewmodel.center.facilityName}"
                     app:layout_constraintTop_toBottomOf="@id/text_view_map_for_center_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -67,7 +67,7 @@
                     android:id="@+id/text_view_map_for_phone_number"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewmodel.center.phoneNumber.toString()}"
+                    android:text="@{`phone number : ` + viewmodel.center.phoneNumber.toString()}"
                     app:layout_constraintTop_toBottomOf="@id/text_view_map_for_facilityName"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -75,7 +75,7 @@
                     android:id="@+id/text_view_map_for_updated_at"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{viewmodel.center.updatedAt.toLocaleString()}"
+                    android:text="@{`update date : ` + viewmodel.center.updatedAt.toLocaleString()}"
                     app:layout_constraintTop_toBottomOf="@id/text_view_map_for_phone_number"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
