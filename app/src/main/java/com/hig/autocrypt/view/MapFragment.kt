@@ -14,8 +14,7 @@ import com.hig.autocrypt.R
 import com.hig.autocrypt.databinding.FragmentMapBinding
 import com.hig.autocrypt.model.MapViewModel
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.MapView
-import com.naver.maps.map.NaverMap
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +43,7 @@ class MapFragment : Fragment() {
         Log.d(TAG, "MapFragment - onCreateView()")
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         mapView = binding.mapViewMapNaverMap
 
         return binding.root
@@ -64,6 +64,48 @@ class MapFragment : Fragment() {
         }
     }
 
+    override fun onStart() {
+        Log.d(TAG,"MapFragment - onStart() called")
+        super.onStart()
+        mapView.onStart()
+    }
+
+    override fun onResume() {
+        Log.d(TAG,"MapFragment - onResume() called")
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        Log.d(TAG,"MapFragment - onPause() called")
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        Log.d(TAG,"MapFragment - onSaveInstanceState() called")
+        super.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        Log.d(TAG,"MapFragment - onStop() called")
+        super.onStop()
+        mapView.onStop()
+    }
+
+    override fun onDestroyView() {
+        Log.d(TAG,"MapFragment - onDestroyView() called")
+        super.onDestroyView()
+        mapView.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        Log.d(TAG,"MapFragment - onLowMemory() called")
+        super.onLowMemory()
+        mapView.onLowMemory()
+    }
+
     private fun setObserver() {
         Log.d(TAG, "MapFragment - setObserver()")
         lifecycleScope.launchWhenStarted {
@@ -82,29 +124,34 @@ class MapFragment : Fragment() {
                     marker.map = naverMap
                     marker.captionText = publicHealth.facilityName
 
-                    if (publicHealth.centerType == "중앙/권역") {
-                        marker.icon = MarkerIcons.BLACK
-                        marker.iconTintColor = Color.BLUE
-                    } else if (publicHealth.centerType == "지역") {
-                        marker.icon = MarkerIcons.BLACK
-                        marker.iconTintColor = Color.GREEN
-                    } else {
-                        marker.icon = MarkerIcons.LIGHTBLUE
-                        marker.iconTintColor = Color.YELLOW
+                    when (publicHealth.centerType) {
+                        "중앙/권역" -> {
+                            marker.icon = MarkerIcons.BLACK
+                            marker.iconTintColor = Color.BLUE
+                        }
+                        "지역" -> {
+                            marker.icon = MarkerIcons.BLACK
+                            marker.iconTintColor = Color.GREEN
+                        }
+                        else -> {
+                            marker.icon = MarkerIcons.LIGHTBLUE
+                            marker.iconTintColor = Color.YELLOW
+                        }
                     }
 
                     marker.setOnClickListener {
                         mapViewModel.updateCenter(publicHealth)
-                        false
+                        val cameraUpdate = getCameraUpdate(publicHealth.lat, publicHealth.lng)
+                        moveCamera(cameraUpdate)
+                        true
                     }
                 }
             }
         }
 
-        // todo() 상태화면은 보이는데 데이터 바인딩 된 레이아웃에 데이터가 전달이 되지 않음.
         lifecycleScope.launchWhenStarted {
             mapViewModel.center.collectLatest {
-                Log.d(TAG, "MapFragment - inside of mapviewmodel.center.collectLatest()")
+                Log.d(TAG, "MapFragment - mapViewModel.center.collectLatest")
                 Log.d(TAG, "MapFragment - center : $it()")
                 when (it) {
                     null -> {
@@ -125,38 +172,14 @@ class MapFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
+    // Need to move camera.
+    private fun getCameraUpdate(lat: Double, lng: Double): CameraUpdate {
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
+        cameraUpdate.animate(CameraAnimation.Fly)
+        return cameraUpdate
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mapView.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
+    private fun moveCamera(cameraUpdate: CameraUpdate) {
+        naverMap.moveCamera(cameraUpdate)
     }
 }
