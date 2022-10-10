@@ -55,7 +55,7 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
 
             for (page in 1..10) {
                 val def = async {
-                    val response = getCoronaCentersFromApi(page = page, 10)
+                    val response = getPublicHealthCentersFromApi(page = page, 10)
 
                     // Save to room
                     response.data.forEach { publicHealth ->
@@ -84,8 +84,8 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
         coronaCenterRepository.insertCoronaCenter(publicHealth)
     }
 
-    private suspend fun getCoronaCentersFromApi(page: Int, perPage: Int = 10): Response {
+    private suspend fun getPublicHealthCentersFromApi(page: Int, perPage: Int = 10): Response {
         Log.d(TAG,"MainViewModel - getCoronaCentersFromApi() called")
-        return coronaCenterRepository.getCoronaCenter(page, perPage)
+        return coronaCenterRepository.getPublicHealthCenters(page, perPage)
     }
 }

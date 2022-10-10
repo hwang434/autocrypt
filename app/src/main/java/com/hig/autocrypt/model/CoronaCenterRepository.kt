@@ -16,8 +16,8 @@ class CoronaCenterRepository(application: Application) {
     private val db = Room.databaseBuilder(application, AppDatabase::class.java, "app-database").build()
     private val coronaCenterDao = db.coronaCenterDao()
 
-    suspend fun getCoronaCenter(page: Int, perPage: Int): Response {
-        return coronaRequestRetrofit.getPublicHealthOffices(page = page, perPage = perPage)
+    suspend fun getPublicHealthCenters(page: Int, perPage: Int): Response {
+        return coronaRequestRetrofit.getPublicHealthCenters(page = page, perPage = perPage)
     }
 
     suspend fun insertCoronaCenter(publicHealth: PublicHealth) {
