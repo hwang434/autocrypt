@@ -42,8 +42,8 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setObserver()
+        startDownload()
         startInitAnimation()
-        viewModel.refreshCoronaCenterData()
     }
 
     private fun setObserver() {
@@ -58,6 +58,13 @@ class MainFragment : Fragment() {
                     findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
                 }
             }
+        }
+    }
+
+    private fun startDownload() {
+        Log.d(TAG,"MainFragment - startDownload() : downloadPercentage : ${viewModel.downloadPercentage.value} called")
+        if (viewModel.downloadPercentage.value == 0) {
+            viewModel.refreshCoronaCenterData()
         }
     }
 
