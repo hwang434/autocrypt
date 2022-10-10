@@ -25,6 +25,11 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     private lateinit var jobOfZeroToEightyAni: Job
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
+    override fun onCleared() {
+        Log.d(TAG,"MainViewModel - onCleared() called")
+        super.onCleared()
+    }
+
     fun makePercentageEighty() {
         Log.d(TAG,"MainViewModel - makePercentageEighty() called")
         jobOfZeroToEightyAni = viewModelScope.launch(Dispatchers.IO) {
@@ -49,7 +54,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     }
 
     fun refreshCoronaCenterData() {
-        Log.d(TAG,"MainViewModel - getCoronaCenter() called")
+        Log.d(TAG,"MainViewModel - refreshCoronaCenterData() called")
         viewModelScope.launch(Dispatchers.IO) {
             val requestDeferredList = ArrayList<Deferred<Unit>>()
             val databaseDeferredList = ArrayList<Deferred<Unit>>()

@@ -148,7 +148,7 @@ class MapFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback {
             val currentTime = System.currentTimeMillis()
             if (currentTime - timeOfBackClicked <= 1500) {
-                requireActivity().finish()
+                requireActivity().finishAndRemoveTask()
                 return@addCallback
             }
 
