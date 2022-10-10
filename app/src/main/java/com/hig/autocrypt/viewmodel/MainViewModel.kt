@@ -13,16 +13,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor( application: Application) : AndroidViewModel(application) {
+class MainViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG: String = "로그"
     }
 
-    private val _downloadPercentage = MutableStateFlow<Int>(0)
+    private val _downloadPercentage = MutableStateFlow(0)
     val downloadPercentage = _downloadPercentage
 
     private lateinit var jobOfZeroToEightyAni: Job
-
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
     fun makePercentageEighty() {
@@ -55,7 +54,7 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
 
             for (page in 1..10) {
                 val def = async {
-                    val response = getCoronaCentersFromApi(page = page, 10)
+                    val response = getPublicHealthCentersFromApi(page = page, 10)
 
                     // Save to room
                     response.data.forEach { publicHealth ->
@@ -84,8 +83,8 @@ class MainViewModel @Inject constructor( application: Application) : AndroidView
         coronaCenterRepository.insertCoronaCenter(publicHealth)
     }
 
-    private suspend fun getCoronaCentersFromApi(page: Int, perPage: Int = 10): Response {
+    private suspend fun getPublicHealthCentersFromApi(page: Int, perPage: Int = 10): Response {
         Log.d(TAG,"MainViewModel - getCoronaCentersFromApi() called")
-        return coronaCenterRepository.getCoronaCenter(page, perPage)
+        return coronaCenterRepository.getPublicHealthCenters(page, perPage)
     }
 }

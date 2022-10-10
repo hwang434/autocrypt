@@ -42,8 +42,8 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setObserver()
+        startDownload()
         startInitAnimation()
-        viewModel.refreshCoronaCenterData()
     }
 
     private fun setObserver() {
@@ -61,9 +61,15 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun startDownload() {
+        Log.d(TAG,"MainFragment - startDownload() : downloadPercentage : ${viewModel.downloadPercentage.value} called")
+        if (viewModel.downloadPercentage.value == 0) {
+            viewModel.refreshCoronaCenterData()
+        }
+    }
+
     private fun startInitAnimation() {
         Log.d(TAG,"MainFragment - startInitAnimation() viewmodel.downloadPercentage.value : ${viewModel.downloadPercentage.value} called")
-
         if (viewModel.downloadPercentage.value == 0) {
             viewModel.makePercentageEighty()
         }
