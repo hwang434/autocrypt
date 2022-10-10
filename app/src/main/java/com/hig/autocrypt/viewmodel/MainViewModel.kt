@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor( application: Application) : AndroidViewModel(application) {
+class MainViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG: String = "로그"
     }
 
-    private val _downloadPercentage = MutableStateFlow<Int>(0)
+    private val _downloadPercentage = MutableStateFlow(0)
     val downloadPercentage = _downloadPercentage
 
     private lateinit var jobOfZeroToEightyAni: Job
