@@ -22,7 +22,6 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     val downloadPercentage = _downloadPercentage
 
     private lateinit var jobOfZeroToEightyAni: Job
-
     private val coronaCenterRepository: CoronaCenterRepository = CoronaCenterRepository(application)
 
     fun makePercentageEighty() {
