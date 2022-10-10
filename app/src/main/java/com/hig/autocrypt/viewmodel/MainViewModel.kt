@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.hig.autocrypt.MainFragmentUILoadingState
 import com.hig.autocrypt.dto.PublicHealth
 import com.hig.autocrypt.dto.Response
 import com.hig.autocrypt.model.CoronaCenterRepository
@@ -18,7 +19,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         private const val TAG: String = "로그"
     }
 
-    private val _downloadPercentage = MutableStateFlow(0)
+    private val _downloadPercentage = MutableStateFlow<MainFragmentUILoadingState>(MainFragmentUILoadingState.Loading(0))
     val downloadPercentage = _downloadPercentage
 
     private lateinit var jobOfZeroToEightyAni: Job
@@ -30,7 +31,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
             // Multiply i with 5%. start percentage is 5%. end percentage is 80%.
             for (i in 1..16) {
                 delay(100)
-                _downloadPercentage.emit(5 * i)
+                _downloadPercentage.emit(MainFragmentUILoadingState.Loading(5 * i))
             }
         }
     }
@@ -40,9 +41,10 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         viewModelScope.launch(Dispatchers.IO) {
             // Multiply i with 5%. start percentage is 85%. end percentage is 100%.
             for (i in 17..20) {
-                _downloadPercentage.emit(5 * i)
+                _downloadPercentage.emit(MainFragmentUILoadingState.Loading(5 * i))
                 delay(75)
             }
+            _downloadPercentage.emit(MainFragmentUILoadingState.Success(true))
         }
     }
 
