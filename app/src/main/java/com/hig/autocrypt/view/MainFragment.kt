@@ -70,7 +70,6 @@ class MainFragment : Fragment() {
 
     private fun startInitAnimation() {
         Log.d(TAG,"MainFragment - startInitAnimation() viewmodel.downloadPercentage.value : ${viewModel.downloadPercentage.value} called")
-
         if (viewModel.downloadPercentage.value == 0) {
             viewModel.makePercentageEighty()
         }
